@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 )
 
 type deck []string
@@ -37,7 +38,9 @@ func shuffle(d deck) deck {
 }
 
 func (d deck) print() {
-	for _, card := range d {
-		fmt.Println(card)
-	}
+	fmt.Println(d.toString())
+}
+
+func (d deck) toString() string {
+	return strings.Join([]string(d)[:], "\n")
 }
