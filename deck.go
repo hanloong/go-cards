@@ -4,18 +4,26 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 )
 
-type deck []string
+type card struct {
+	name  string
+	suit  string
+	rank  string
+	value int
+}
+
+type deck []card
 
 func newDeck() deck {
 	cards := deck{}
 	cardSuits := []string{"Spades", "Hearts", "Diamonds", "Clubs"}
-	cardValues := []string{"Ace", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+	cardRanks := []string{"Ace", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
 
 	for _, suit := range cardSuits {
-		for _, value := range cardValues {
-			cards = append(cards, value+" of "+suit)
+		for offset, rank := range cardRanks {
+			cards = append(cards, card{name: rank + " of " + suit, suit: suit, rank: rank, value: (13 - offset)})
 		}
 	}
 	return cards
@@ -26,10 +34,12 @@ func deal(d deck, handsize int) (deck, deck) {
 }
 
 func shuffle(d deck) deck {
+	source := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(source)
 	shuffle := deck{}
 
 	for len := len(d); len > 0; len-- {
-		card := rand.Intn(len)
+		card := r.Intn(len)
 		shuffle = append(shuffle, d[card])
 		d[card] = d[len-1]
 	}
@@ -41,6 +51,26 @@ func (d deck) print() {
 	fmt.Println(d.toString())
 }
 
+func (d deck) isFlush() bool {
+	if len(d) == 0 {
+		return false
+	}
+
+	firstSuit := d[0].suit
+
+	for _, card := range d {
+		if card.suit != firstSuit {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (d deck) toString() string {
-	return strings.Join([]string(d)[:], "\n")
+	names := []string{}
+	for _, card := range d {
+		names = append(names, card.name)
+	}
+	return strings.Join(names, "\n")
 }
