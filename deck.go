@@ -19,11 +19,15 @@ type deck []card
 func newDeck() deck {
 	cards := deck{}
 	cardSuits := []string{"Spades", "Hearts", "Diamonds", "Clubs"}
-	cardRanks := []string{"Ace", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
+	cardRanks := []string{"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"}
 
 	for _, suit := range cardSuits {
 		for offset, rank := range cardRanks {
-			cards = append(cards, card{name: rank + " of " + suit, suit: suit, rank: rank, value: (13 - offset)})
+			cards = append(cards, card{
+				name:  rank + " of " + suit,
+				suit:  suit,
+				rank:  rank,
+				value: (13 - offset)})
 		}
 	}
 	return cards
@@ -34,12 +38,11 @@ func deal(d deck, handsize int) (deck, deck) {
 }
 
 func shuffle(d deck) deck {
-	source := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(source)
+	realRand := rand.New(rand.NewSource(time.Now().UnixNano()))
 	shuffle := deck{}
 
 	for len := len(d); len > 0; len-- {
-		card := r.Intn(len)
+		card := realRand.Intn(len)
 		shuffle = append(shuffle, d[card])
 		d[card] = d[len-1]
 	}
